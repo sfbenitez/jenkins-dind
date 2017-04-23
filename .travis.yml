@@ -1,0 +1,28 @@
+sudo: required
+
+language: bash
+
+services:
+  - docker
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y quilt
+
+script:
+  - curl -sSL https://raw.githubusercontent.com/rcmorano/baids/master/baids | bash -s install
+  - ln -nfs $PWD/baids ~/.baids/functions.d/jenkins-dind
+  - /bin/bash --login -c 'source ~/.baids/baids; set -e; jenkins-dind-docker-build'
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+      docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+      DOCKER_IMAGE_COMMIT=$(git log -1 --pretty=format:'%h';
+      DOCKER_IMAGE_TIMESTAMP=$(docker inspect -f '{{ .Created }}' ${DOCKER_IMAGE}|awk -F':' '{print $1$2}'|sed 's%-\|T%%g');
+      docker tag emergya/jenkins-dind:latest emergya/jenkins-dind:$DOCKER_IMAGE_TIMESTAMP:$DOCKER_IMAGE_COMMIT;
+      docker push emergya/jenkins-dind:latest;
+      docker push emergya/jenkins-dind:$DOCKER_IMAGE_TIMESTAMP:$DOCKER_IMAGE_COMMIT;
+    fi
+
+email:
+  - sistemas@emergya.com
