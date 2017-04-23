@@ -17,4 +17,7 @@ create-developer-user $DEVELOPER_USER
 
 add-virtualhosts-to-etc-hosts
 
+# ensure JENKINS_HOME is jenkins owned
+chown -R jenkins: $JENKINS_HOME
+
 leave-supervisord-in-foreground
