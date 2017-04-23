@@ -17,6 +17,11 @@ function jenkins-dind-docker-build() {
   jenkins-dind-init
   jenkins-dind-docker-build-cleanup
 
+  FIRST_OLDPWD="$PWD"
+  cd $PROJECT_DIR
+  git submodule init
+  git submodule update
+
   export TIMESTAMP=$(date +%Y%m%d%H%M)
   cp -a $PROJECT_DIR/Dockerfile.tpl $PROJECT_DIR/Dockerfile
 
@@ -42,7 +47,6 @@ function jenkins-dind-docker-build() {
 
   sudo mount -t overlayfs -o lowerdir=$OVERLAY_LOWER_DIRS,workdir=$OVERLAYFS_WORKDIR overlayfs $MERGED_BUILD_CONTEXT_DIR
    
-  FIRST_OLDPWD="$PWD"
   cd $PROJECT_DIR
   rm -rf .pc
   export QUILT_PATCHES="$PROJECT_SOURCES_DIR/quilt-patches"
