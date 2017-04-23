@@ -4,8 +4,6 @@ MAINTAINER rcmova@gmail.com
 ENV BUILD_TIMESTAMP 201704051337
 ENV LOCALE en_US.UTF-8
 
-EXPOSE 80 443 22
-
 RUN locale-gen $LOCALE && update-locale LANG=$LOCALE
 
 ADD assets/etc/apt /assets/etc/apt
