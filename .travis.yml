@@ -22,9 +22,9 @@ after_success:
       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
       DOCKER_IMAGE_COMMIT=$(git log -1 --pretty=format:'%h');
       DOCKER_IMAGE_TIMESTAMP=$(docker inspect -f '{{ .Created }}' ${DOCKER_IMAGE}|awk -F':' '{print $1$2}'|sed 's%-\|T%%g');
-      docker tag emergya/jenkins-dind:latest emergya/jenkins-dind:$DOCKER_IMAGE_TIMESTAMP:$DOCKER_IMAGE_COMMIT;
+      docker tag emergya/jenkins-dind:latest emergya/jenkins-dind:$DOCKER_IMAGE_TIMESTAMP-$DOCKER_IMAGE_COMMIT;
       docker push emergya/jenkins-dind:latest;
-      docker push emergya/jenkins-dind:$DOCKER_IMAGE_TIMESTAMP:$DOCKER_IMAGE_COMMIT;
+      docker push emergya/jenkins-dind:$DOCKER_IMAGE_TIMESTAMP-$DOCKER_IMAGE_COMMIT;
     fi
 
 email:
