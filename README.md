@@ -16,7 +16,7 @@
 ```
 # set correspondingly:
 export PROJECT_DIR=$HOME/Projects/emergya/jenkins-dind
-ln -s $PROJECT_DIR/baids $HOME/.baids/functions.d/jenkins-dind
+ln -nfs $PROJECT_DIR/baids $HOME/.baids/functions.d/jenkins-dind
 ```
 * Build by executing the build baid:
 ```
