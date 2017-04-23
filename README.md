@@ -1,7 +1,5 @@
-# Build Status
-
-* hub.docker.com (automated build) [![Build Status](https://travis-ci.org/Emergya/jenkins-dind.svg?branch=master)](https://travis-ci.org/Emergya/jenkins-dind)
-* travis-ci.org (timestamped-commit tag) [![Build Status](https://travis-ci.org/Emergya/jenkins-dind.svg?branch=master)](https://travis-ci.org/Emergya/jenkins-dind)
+* [hub.docker.com (automated build):](https://hub.docker.com/r/emergya/automated-jenkins-dind) [![Build Status](https://travis-ci.org/Emergya/jenkins-dind.svg?branch=master)](https://travis-ci.org/Emergya/jenkins-dind)
+* [travis-ci.org (timestamped-commit tag):](https://hub.docker.com/r/emergya/jenkins-dind/) [![Build Status](https://travis-ci.org/Emergya/jenkins-dind.svg?branch=master)](https://travis-ci.org/Emergya/jenkins-dind)
 
 # ToC (Table Of Contents)
 
