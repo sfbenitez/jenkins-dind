@@ -3,7 +3,9 @@
 function jenkins-dind-docker-build-cleanup() {
 
   jenkins-dind-init
-  sudo umount $MERGED_BUILD_CONTEXT_DIR
+  set +e
+  sudo umount $MERGED_BUILD_CONTEXT_DIR 2>/dev/null
+  set -e
   sudo rm -rf $MERGED_BUILD_CONTEXT_DIR
   sudo mkdir -p $MERGED_BUILD_CONTEXT_DIR
   sudo rm -rf $OVERLAYFS_WORKDIR
