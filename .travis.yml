@@ -5,6 +5,9 @@ language: bash
 services:
   - docker
 
+env:
+  - DOCKER_IMAGE=emergya/jenkins-dind
+
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y quilt
