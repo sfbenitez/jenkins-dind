@@ -1,0 +1,19 @@
+version: '3'
+services:
+  jenkins.emergya.com:
+    privileged: true
+    image: emergya/jenkins-dind:latest
+    environment:
+      - HOST_UID=${HOST_UID}
+      - HOST_GID=${HOST_GID}
+      - DEVELOPER_USER=${DEVELOPER_USER}
+      - LOCALES=es_ES.UTF-8 en_US.UTF-8
+      - PROJECT_NAME=${PROJECT_NAME}
+      - ENVIRONMENT=${ENVIRONMENT}
+      - ENV_VHOST=${ENV_VHOST}
+      - VIRTUAL_HOSTS=${VIRTUAL_HOSTS}
+      - VIRTUAL_HOST=https://${ENV_VHOST}
+    volumes:
+      - ${DATA_DIR}/docker-containers-volumes/${ENV_VHOST}/var/jenkins_home:/var/jenkins_home
+      - ${DATA_DIR}/docker-containers-volumes/${ENV_VHOST}/var/log/supervisor:/var/log/supervisor
+      - ${DATA_DIR}/docker-containers-volumes/${ENV_VHOST}/var/lib/docker:/var/lib/docker
