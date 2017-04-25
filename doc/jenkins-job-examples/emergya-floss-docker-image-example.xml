@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Example job for building Emergya&apos;s travis-ci-able docker images</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty plugin="gitlab-plugin@1.4.5">
+      <gitLabConnection></gitLabConnection>
+    </com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.25">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+    <hudson.plugins.throttleconcurrents.ThrottleJobProperty plugin="throttle-concurrents@1.9.0">
+      <maxConcurrentPerNode>0</maxConcurrentPerNode>
+      <maxConcurrentTotal>0</maxConcurrentTotal>
+      <categories class="java.util.concurrent.CopyOnWriteArrayList"/>
+      <throttleEnabled>false</throttleEnabled>
+      <throttleOption>project</throttleOption>
+      <limitOneJobWithMatchingParams>false</limitOneJobWithMatchingParams>
+      <paramsToUseForLimit></paramsToUseForLimit>
+    </hudson.plugins.throttleconcurrents.ThrottleJobProperty>
+    <EnvInjectJobProperty plugin="envinject@2.0">
+      <info>
+        <secureGroovyScript plugin="script-security@1.27">
+          <script></script>
+          <sandbox>false</sandbox>
+        </secureGroovyScript>
+        <loadFilesFromMaster>false</loadFilesFromMaster>
+      </info>
+      <on>true</on>
+      <keepJenkinsSystemVariables>true</keepJenkinsSystemVariables>
+      <keepBuildVariables>true</keepBuildVariables>
+      <overrideBuildParameters>false</overrideBuildParameters>
+    </EnvInjectJobProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@3.3.0">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>_GIT_HTTP_REPOSITORY_URI_</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/master</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>docker login -u=&quot;$DOCKER_USERNAME&quot; -p=&quot;$DOCKER_PASSWORD&quot; ${DOCKER_PRIVATE_REGISTRY_HOST}
+
+UPSTREAM_IMAGE=$(grep ^FROM Dockerfile | sed &apos;s|^FROM \(.*\):\(.*\)|\1:\2|g&apos;)
+UPSTREAM_IMAGE_NAME=$(echo $UPSTREAM_IMAGE | awk -F: &apos;{print $1}&apos;)
+UPSTREAM_IMAGE_TIMESTAMP=$(echo $UPSTREAM_IMAGE | awk -F: &apos;{print $2}&apos; | awk -F- &apos;{print $1}&apos;)
+UPSTREAM_IMAGE_COMMIT_TAG=$(echo $UPSTREAM_IMAGE | awk -F: &apos;{print $2}&apos; | awk -F- &apos;{print $2}&apos;)
+
+set +e
+echo $UPSTREAM_IMAGE | grep -q ^$DOCKER_PRIVATE_REGISTRY_REPO
+if [ $? -eq 0 ]
+then
+  DOCKER_PRIVATE_REGISTRY_BASE_URI=&quot;${DOCKER_PRIVATE_REGISTRY_HOST}&quot;
+
+else
+  DOCKER_PRIVATE_REGISTRY_BASE_URI=&quot;${DOCKER_PRIVATE_REGISTRY_HOST}/${DOCKER_PRIVATE_REGISTRY_REPO}&quot;
+fi
+set -e
+NEW_UPSTREAM_IMAGE=&quot;$DOCKER_PRIVATE_REGISTRY_BASE_URI/${UPSTREAM_IMAGE}&quot;
+
+# check if timestamped image exists, else
+# get commit-tagged image; which should be the latest built for that commit
+set +e
+docker pull ${NEW_UPSTREAM_IMAGE}
+if [ $? -ne 0 ]
+then
+  NEW_UPSTREAM_IMAGE=&quot;$DOCKER_PRIVATE_REGISTRY_BASE_URI/${UPSTREAM_IMAGE_NAME}:${UPSTREAM_IMAGE_COMMIT_TAG}&quot;
+fi
+set -e
+
+sed -i &quot;s|^FROM.*|FROM $NEW_UPSTREAM_IMAGE|g&quot; Dockerfile</command>
+    </hudson.tasks.Shell>
+    <ruby-proxy-object>
+      <ruby-object ruby-class="Jenkins::Tasks::BuilderProxy" pluginid="travis-yml">
+        <object ruby-class="TravisYmlBuilder" pluginid="travis-yml"/>
+        <pluginid pluginid="travis-yml" ruby-class="String">travis-yml</pluginid>
+      </ruby-object>
+    </ruby-proxy-object>
+    <hudson.tasks.Shell>
+      <command>DOCKER_IMAGE_COMMIT=$(git log -1 --pretty=format:&apos;%h&apos;)
+DOCKER_IMAGE_TIMESTAMP=$(docker inspect -f &apos;{{ .Created }}&apos; ${DOCKER_IMAGE}|awk -F&apos;:&apos; &apos;{print $1$2}&apos;|sed &apos;s%-\|T%%g&apos;)
+docker tag $DOCKER_IMAGE:latest $DOCKER_PRIVATE_REGISTRY_HOST/$DOCKER_IMAGE:$DOCKER_IMAGE_TIMESTAMP-$DOCKER_IMAGE_COMMIT
+docker tag $DOCKER_IMAGE:latest $DOCKER_PRIVATE_REGISTRY_HOST/$DOCKER_IMAGE:$DOCKER_IMAGE_COMMIT
+docker tag $DOCKER_IMAGE:latest $DOCKER_PRIVATE_REGISTRY_HOST/$DOCKER_IMAGE:latest
+docker push $DOCKER_PRIVATE_REGISTRY_HOST/$DOCKER_IMAGE:$DOCKER_IMAGE_TIMESTAMP-$DOCKER_IMAGE_COMMIT
+docker push $DOCKER_PRIVATE_REGISTRY_HOST/$DOCKER_IMAGE:$DOCKER_IMAGE_COMMIT
+docker push $DOCKER_PRIVATE_REGISTRY_HOST/$DOCKER_IMAGE:latest</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers>
+    <hudson.plugins.ws__cleanup.PreBuildCleanup plugin="ws-cleanup@0.33">
+      <deleteDirs>false</deleteDirs>
+      <cleanupParameter></cleanupParameter>
+      <externalDelete></externalDelete>
+    </hudson.plugins.ws__cleanup.PreBuildCleanup>
+    <EnvInjectBuildWrapper plugin="envinject@2.0">
+      <info>
+        <propertiesContent>DOCKER_PRIVATE_REGISTRY_HOST=_DOCKER_PRIVATE_REGISTRY_HOST_
+DOCKER_PRIVATE_REGISTRY_REPO=emergya
+DOCKER_IMAGE=_DOCKER_IMAGE_</propertiesContent>
+        <secureGroovyScript plugin="script-security@1.27">
+          <script></script>
+          <sandbox>false</sandbox>
+        </secureGroovyScript>
+        <loadFilesFromMaster>false</loadFilesFromMaster>
+      </info>
+    </EnvInjectBuildWrapper>
+    <EnvInjectPasswordWrapper plugin="envinject@2.0">
+      <injectGlobalPasswords>false</injectGlobalPasswords>
+      <maskPasswordParameters>true</maskPasswordParameters>
+      <passwordEntries>
+        <EnvInjectPasswordEntry>
+          <name>DOCKER_USERNAME</name>
+          <value>_DOCKER_USERNAME_HASH_</value>
+        </EnvInjectPasswordEntry>
+        <EnvInjectPasswordEntry>
+          <name>DOCKER_PASSWORD</name>
+          <value>_DOCKER_PASSWORD_HASH_</value>
+        </EnvInjectPasswordEntry>
+      </passwordEntries>
+    </EnvInjectPasswordWrapper>
+  </buildWrappers>
+</project>
