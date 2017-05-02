@@ -31,6 +31,9 @@ RUN curl -L https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_
 
 # allow jenkins to talk to docker daemon and to perform privileged actions with sudo
 RUN adduser jenkins docker && adduser jenkins sudo
+# Fixes forced requiretty on ubuntu-16.04
+RUN sed -i -e '/Defaults\s\+env_reset/a Defaults\texempt_group=sudo' /etc/sudoers && \
+    sed -i -e 's/%sudo\s*ALL=(ALL:ALL) ALL/%sudo\tALL=(ALL) NOPASSWD:ALL/g' /etc/sudoers
 
 ADD assets/ /assets
 
