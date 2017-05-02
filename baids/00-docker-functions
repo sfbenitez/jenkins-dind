@@ -10,6 +10,7 @@ function jenkins-dind-docker-build-cleanup() {
   sudo mkdir -p $MERGED_BUILD_CONTEXT_DIR
   sudo rm -rf $OVERLAYFS_WORKDIR
   sudo mkdir -p $OVERLAYFS_WORKDIR
+  set +e
 
 }
 
@@ -22,7 +23,7 @@ function jenkins-dind-docker-build() {
   FIRST_OLDPWD="$PWD"
   cd $PROJECT_DIR
   git submodule init
-  git submodule update
+  git submodule update --recursive
 
   export TIMESTAMP=$(date +%Y%m%d%H%M)
   cp -a $PROJECT_DIR/Dockerfile.tpl $PROJECT_DIR/Dockerfile
@@ -58,5 +59,6 @@ function jenkins-dind-docker-build() {
   cd $FIRST_OLDPWD
 
   jenkins-dind-docker-build-cleanup
+  set +e
 
 }
