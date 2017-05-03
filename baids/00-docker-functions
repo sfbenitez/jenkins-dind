@@ -3,14 +3,11 @@
 function jenkins-dind-docker-build-cleanup() {
 
   jenkins-dind-init
-  set +e
-  sudo umount $MERGED_BUILD_CONTEXT_DIR 2>/dev/null
-  set -e
+  grep -q $MERGED_BUILD_CONTEXT_DIR /proc/mounts && sudo umount $MERGED_BUILD_CONTEXT_DIR 2>/dev/null
   sudo rm -rf $MERGED_BUILD_CONTEXT_DIR
   sudo mkdir -p $MERGED_BUILD_CONTEXT_DIR
   sudo rm -rf $OVERLAYFS_WORKDIR
   sudo mkdir -p $OVERLAYFS_WORKDIR
-  set +e
 
 }
 
@@ -48,7 +45,7 @@ function jenkins-dind-docker-build() {
     sed -i -e "/_${DOCKER_CONTEXT_MARK}_PLACEHOLDER_/{ r /tmp/dockerfile-part" -e "d}" $PROJECT_DIR/Dockerfile
   done
 
-  sudo mount -t overlayfs -o lowerdir=$OVERLAY_LOWER_DIRS,workdir=$OVERLAYFS_WORKDIR overlayfs $MERGED_BUILD_CONTEXT_DIR
+  sudo mount -t overlay -o lowerdir=$OVERLAY_LOWER_DIRS,workdir=$OVERLAYFS_WORKDIR overlayfs $MERGED_BUILD_CONTEXT_DIR
    
   cd $PROJECT_DIR
   rm -rf .pc
@@ -59,6 +56,5 @@ function jenkins-dind-docker-build() {
   cd $FIRST_OLDPWD
 
   jenkins-dind-docker-build-cleanup
-  set +e
 
 }
