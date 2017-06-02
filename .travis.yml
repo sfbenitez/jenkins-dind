@@ -27,5 +27,9 @@ after_success:
       docker push emergya/jenkins-dind:$DOCKER_IMAGE_TIMESTAMP-$DOCKER_IMAGE_COMMIT;
     fi
 
-email:
-  - sistemas@emergya.com
+notifications:
+  email:
+    recipients:
+      - emergya-integration-github@emergya.com
+    on_success: always
+    on_failure: always
