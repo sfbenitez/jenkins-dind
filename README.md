@@ -7,12 +7,16 @@
 
 * Install latest [docker-engine](https://docs.docker.com/engine/installation/) and [docker-compose](https://docs.docker.com/compose/install)
 
+Note: docker-compose version must be >= 1.13.0
+
 # Build docker image
 
 ## Build requirements
 
 * overlayfs-able kernel (for merging the 3 involved docker build contexts)
+* quilt (for appyling patches to the merged docker build context)
 * docker-engine
+
 
 ## Build instructions
 
@@ -22,10 +26,11 @@
 # set correspondingly:
 export PROJECT_DIR=$HOME/Projects/emergya/jenkins-dind
 ln -nfs $PROJECT_DIR/baids $HOME/.baids/functions.d/jenkins-dind
+baids-reload
 ```
 * Build by executing the build baid:
 ```
-jenkins-dind-build-docker-image
+jenkins-dind-docker-build
 ```
 
 # Run/Install
@@ -34,5 +39,16 @@ jenkins-dind-build-docker-image
 export ENV_VHOST=jenkins.emergya.com
 export DATA_DIR=$PWD/data
 docker-compose up -d
+```
+
+* Get jenkins initialAdminPassword:
+```
 docker-compose exec jenkins.emergya.com cat /var/jenkins_home/secrets/initialAdminPassword
 ```
+
+* Get the docker container IP
+```
+docker inspect jenkinsdind_jenkins.emergya.com_1 | grep IPAddress | cut -d '"' -f 4
+```
+
+* Access the jenkins web interface at http://<IP>:8080
