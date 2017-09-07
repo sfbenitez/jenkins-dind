@@ -63,7 +63,7 @@ RUN { \
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
 ENV JAVA_VERSION 8u131
-ENV JAVA_DEBIAN_VERSION 8u131-b11-0ubuntu1.16.04.2
+ENV JAVA_DEBIAN_VERSION 8u131-b11-2ubuntu1.16.04.3
 
 # see https://bugs.debian.org/775775
 # and https://github.com/docker-library/java/issues/19#issuecomment-70546872
