@@ -2,14 +2,14 @@ Index: jenkins-dind/Dockerfile
 ===================================================================
 --- jenkins-dind.orig/Dockerfile
 +++ jenkins-dind/Dockerfile
-@@ -82,9 +82,7 @@ RUN set -ex; \
- 	[ "$JAVA_HOME" = "$(docker-java-home)" ]; \
+@@ -94,9 +94,7 @@ RUN set -ex; \
+ 	[ "$(readlink -f "$JAVA_HOME")" = "$(docker-java-home)" ]; \
  	\
  # update-alternatives so that future installs of other OpenJDK versions don't change /usr/bin/java
--	update-alternatives --get-selections | awk -v home="$JAVA_HOME" 'index($3, home) == 1 { $2 = "manual"; print | "update-alternatives --set-selections" }'; \
+-	update-alternatives --get-selections | awk -v home="$(readlink -f "$JAVA_HOME")" 'index($3, home) == 1 { $2 = "manual"; print | "update-alternatives --set-selections" }'; \
 -# ... and verify that it actually worked for one of the alternatives we care about
 -	update-alternatives --query java | grep -q 'Status: manual'
-+  update-alternatives --get-selections | grep $JAVA_HOME | while read line; do CMD=$(echo $line | awk '{print $1}'); CMD_PATH=$(echo $line | awk '{print $NF}'); update-alternatives --set $CMD $CMD_PATH; done;
++update-alternatives --get-selections | grep $JAVA_HOME | while read line; do CMD=$(echo $line | awk '{print $1}'); CMD_PATH=$(echo $line | awk '{print $NF}'); update-alternatives --set $CMD $CMD_PATH; done;
  
  # see CA_CERTIFICATES_JAVA_VERSION notes above
  RUN /var/lib/dpkg/info/ca-certificates-java.postinst configure

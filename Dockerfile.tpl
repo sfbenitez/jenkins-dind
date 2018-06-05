@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 MAINTAINER rcmova@gmail.com
 
 ENV BUILD_TIMESTAMP 201704051337
@@ -20,7 +20,7 @@ RUN apt-get update -qq && \
     # base depends
     DEBIAN_FRONTEND=noninteractive apt-get install -y locales net-tools iputils-ping iproute2 sysstat iotop tcpdump tcpick bwm-ng tree strace screen rsync inotify-tools socat wget curl \
     openssh-server openssh-client build-essential automake make autoconf libpcre3-dev software-properties-common supervisor sudo git vim emacs python-minimal fontconfig ssmtp mailutils \
-    bash-completion less zfs
+    bash-completion less zfsutils-linux
 
 RUN locale-gen $LOCALE && update-locale LANG=$LOCALE
 
