@@ -27,7 +27,7 @@ function jenkins-dind-docker-build() {
 
   # merge docker build contexts
   export DOCKER_CONTEXT_01="$PROJECT_SOURCES_DIR/01-jpetazzo-dind"
-  export DOCKER_CONTEXT_02="$PROJECT_SOURCES_DIR/02-openjdk/8-jdk"
+  export DOCKER_CONTEXT_02="$PROJECT_SOURCES_DIR/02-openjdk/8/jdk"
   export DOCKER_CONTEXT_03="$PROJECT_SOURCES_DIR/03-jenkinsci-docker"
 
   OVERLAY_LOWER_DIRS="${PROJECT_DIR}"
