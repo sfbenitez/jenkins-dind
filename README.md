@@ -43,7 +43,7 @@ docker-compose up -d
 
 * Get jenkins initialAdminPassword:
 ```
-docker-compose exec jenkins.emergya.com cat /var/jenkins_home/secrets/initialAdminPassword
+docker exec jenkins.emergya.com cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
 * Get the docker container IP
