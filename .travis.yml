@@ -13,8 +13,8 @@ before_install:
   - sudo apt-get install -y quilt
 
 script:
-  - curl -sSL https://raw.githubusercontent.com/rcmorano/baids/master/baids | bash -s install
-  - ln -nfs $PWD/baids ~/.baids/functions.d/jenkins-dind
+    #  - curl -sSL https://raw.githubusercontent.com/rcmorano/baids/master/baids | bash -s install
+    #  - ln -nfs $PWD/baids ~/.baids/functions.d/jenkins-dind; if [ $? -eq 1 ];then ln -nfs /baids ~/.baids/functions.d/jenkins-dind;fi
   - /bin/bash --login -c 'source ~/.baids/baids; set -e; jenkins-dind-docker-build'
 
 after_success:
