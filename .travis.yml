@@ -8,7 +8,6 @@ services:
 env:
   global:
     - DOCKER_IMAGE=emergya/jenkins-dind
-    - REPO_NAME=jenkins-dind
     - GIT_URL=git@github.com:sfbenitez/jenkins-dind.git
 
 before_install:
@@ -23,7 +22,7 @@ script:
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
         echo "Successfull build!";
-        curl -ILk 'https://'"${JENKINS_USER}"':'"${JENKINS_API_TOKEN}"'@jenkins.emergya.com/job/'"${JENKINS_JOB_NAME}"'/buildWithParameters?token='"${JENKINS_JOB_TOKEN}"'&GIT_URL='"${GIT_URL}"'&DOCKER_IMAGE='"${DOCKER_IMAGE}"
+        curl -ILk 'https://'"${JENKINS_USER}"':'"${JENKINS_API_TOKEN}"'@jenkins.emergya.com/job/'"${JENKINS_JOB_NAME}"'/buildWithParameters?token='"${JENKINS_JOB_TOKEN}"'&GIT_URL='"${GIT_URL}"'&DOCKER_IMAGE='"${DOCKER_IMAGE}";
     fi
 
 notifications:
